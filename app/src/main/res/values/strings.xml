@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Improved Museum Art Gallery</string>
+    <string name="art_picture">Art Image</string>
+    <string name="loading">Loading</string>
+    <string name="loading_failed">Loading Failed\n</string>
+    <string name="retry">Retry</string>
+</resources>
