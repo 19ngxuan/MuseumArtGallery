@@ -1,4 +1,4 @@
-package com.example.improvedmuseumartgallery.ui.screens
+package com.example.improvedmuseumartgallery.presentation.screens.search
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,21 +26,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.improvedmuseumartgallery.viewModel.SearchUiState
-import com.example.improvedmuseumartgallery.viewModel.SearchViewModel
+import com.example.improvedmuseumartgallery.presentation.screens.UiState
+import com.example.improvedmuseumartgallery.presentation.screens.loading.LoadingScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(searchViewModel: SearchViewModel, navigateToDetail: (Int) -> Unit) {
+
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
-    var itemsHistory = remember { mutableStateListOf("") }
-    val uiState = searchViewModel.searchUiState
+    val itemsHistory = remember { mutableStateListOf("") }
+    val searchUiState = searchViewModel.searchV2.collectAsState()
 
     val onSearch: (String) -> Unit = { query ->
-        if(query.isNotEmpty()) {
-            searchViewModel.searchArtworks(query)
+        if (query.isNotEmpty()) {
+            searchViewModel.searchV2(query)
 
         }
     }
@@ -97,23 +99,22 @@ fun SearchScreen(searchViewModel: SearchViewModel, navigateToDetail: (Int) -> Un
 
         }
 
-        when (uiState) {
-            is SearchUiState.Loading -> {
+        when (val uiState = searchUiState.value) {
+            is UiState.Loading -> {
                 LoadingScreen()
             }
 
-            is SearchUiState.Success -> {
+            is UiState.Success -> {
                 LazyColumn {
-                    items(uiState.artworkIds) { artId ->
+                    items(uiState.data) { artId ->
                         ListItem(headlineContent = { Text("$artId") }, Modifier.clickable {
                             navigateToDetail(artId)
-
                         })
                     }
                 }
             }
 
-            is SearchUiState.Error -> {
+            else -> {
                 Text("Fehler beim Laden der Suchergebnisse", color = Color.Red)
             }
         }

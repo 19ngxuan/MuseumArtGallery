@@ -1,4 +1,4 @@
-package com.example.improvedmuseumartgallery.ui.theme
+package com.example.improvedmuseumartgallery.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

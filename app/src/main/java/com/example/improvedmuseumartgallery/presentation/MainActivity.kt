@@ -1,4 +1,4 @@
-package com.example.improvedmuseumartgallery
+package com.example.improvedmuseumartgallery.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,9 +9,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.improvedmuseumartgallery.navigation.AppNavigation
-import com.example.improvedmuseumartgallery.ui.theme.ImprovedMuseumArtGalleryTheme
+import com.example.improvedmuseumartgallery.presentation.navigation.AppNavigation
+import com.example.improvedmuseumartgallery.presentation.theme.ImprovedMuseumArtGalleryTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +30,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 
 @Preview(showBackground = true)

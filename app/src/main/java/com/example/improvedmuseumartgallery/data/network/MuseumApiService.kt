@@ -1,7 +1,7 @@
-package com.example.improvedmuseumartgallery.network
+package com.example.improvedmuseumartgallery.data.network
 
-import com.example.improvedmuseumartgallery.model.Artwork
-import com.example.improvedmuseumartgallery.model.SearchResponse
+import com.example.improvedmuseumartgallery.domain.model.Artwork
+import com.example.improvedmuseumartgallery.domain.model.SearchResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

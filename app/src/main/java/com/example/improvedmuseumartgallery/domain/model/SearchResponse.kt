@@ -1,4 +1,4 @@
-package com.example.improvedmuseumartgallery.model
+package com.example.improvedmuseumartgallery.domain.model
 
 import kotlinx.serialization.Serializable
 

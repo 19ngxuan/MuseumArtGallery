@@ -1,4 +1,4 @@
-package com.example.improvedmuseumartgallery.ui.theme
+package com.example.improvedmuseumartgallery.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
