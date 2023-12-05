@@ -2,7 +2,6 @@ package com.example.improvedmuseumartgallery.presentation.screens.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.improvedmuseumartgallery.domain.repository.MuseumRepository
 import com.example.improvedmuseumartgallery.domain.useCase.SearchArtwork
 import com.example.improvedmuseumartgallery.presentation.screens.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,11 +12,8 @@ import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-//TODO make the states common and generic
-
 @HiltViewModel
 class SearchViewModel @Inject constructor (
-    private val museumRepository: MuseumRepository,
     private val searchArtworkUseCase: SearchArtwork
 ) :
     ViewModel() {

@@ -13,8 +13,6 @@ import kotlinx.coroutines.flow.transform
 import javax.inject.Inject
 
 
-//TODO get artId as constructor param (Hilt should provide a way to that)
-// HiltViewModel does not work with AssistedInjection
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val getArtworkUseCase: GetArtwork,
@@ -29,12 +27,6 @@ class DetailViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), UiState.Loading)
 
-
-    //TODO send loading state first
-
-    //TODO send success or error state
-
-    // TODO convert it to stateFlow
     private suspend fun getArtworks(artId: Int): UiState<Artwork> {
         return try {
             val result = getArtworkUseCase(artId)
