@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetFavoriteArtworkById @Inject constructor(
     private val museumRepository: MuseumRepository
 ) {
-    suspend operator fun invoke(objectId: Int): Flow<FavoriteArtwork?> {
+    operator fun invoke(objectId: Int): Flow<FavoriteArtwork?> {
         return museumRepository.getFavoriteArtworkById(objectId)
     }
 }

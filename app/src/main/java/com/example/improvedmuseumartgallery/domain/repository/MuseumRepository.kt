@@ -3,7 +3,6 @@ package com.example.improvedmuseumartgallery.domain.repository
 import com.example.improvedmuseumartgallery.data.dataSource.localDataSource.entity.FavoriteArtwork
 import com.example.improvedmuseumartgallery.domain.model.Artwork
 import com.example.improvedmuseumartgallery.domain.model.CheckedItem
-import com.example.improvedmuseumartgallery.domain.model.SearchResponse
 import kotlinx.coroutines.flow.Flow
 
 interface MuseumRepository {
