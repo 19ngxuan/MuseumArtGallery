@@ -1,0 +1,47 @@
+package com.example.improvedmuseumartgallery.presentation.screens.search
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.improvedmuseumartgallery.domain.model.CheckedItem
+import com.example.improvedmuseumartgallery.domain.useCase.SearchArtwork
+import com.example.improvedmuseumartgallery.presentation.screens.UiState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+    private val searchArtworkUseCase: SearchArtwork,
+) :
+    ViewModel() {
+
+
+    private val refreshSearch = MutableSharedFlow<String>()
+
+    val searchV2 = refreshSearch.transform { query ->
+        emit(UiState.Loading)
+        val result = searchArtworksV2(query)
+        emit(result)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), UiState.Success(emptyList()))
+
+    fun searchV2(query: String) {
+        viewModelScope.launch {
+            refreshSearch.emit(query)
+        }
+    }
+
+    private suspend fun searchArtworksV2(query: String): UiState<List<CheckedItem>> {
+        return try {
+            val result = searchArtworkUseCase(query)
+            UiState.Success(result ?: listOf())
+        } catch (e: Exception) {
+            UiState.Error
+        }
+    }
+
+
+}
