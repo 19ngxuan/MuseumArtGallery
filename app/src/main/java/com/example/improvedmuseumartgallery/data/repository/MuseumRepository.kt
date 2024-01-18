@@ -7,7 +7,8 @@ import com.example.improvedmuseumartgallery.domain.model.Artwork
 import com.example.improvedmuseumartgallery.domain.model.CheckedItem
 import com.example.improvedmuseumartgallery.domain.repository.MuseumRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 
@@ -16,25 +17,24 @@ class MuseumRepositoryImp @Inject constructor(
     private val museumLocalDataSource: MuseumLocalDataSource,
 ) : MuseumRepository {
 
-    override suspend fun searchArtworks(query: String): List<CheckedItem>? {
+    override suspend fun searchArtworks(query: String): Flow<List<CheckedItem>> {
 
-        val remoteDataSourceList: List<Int>? =
-            museumRemoteDataSource.searchArtworks(query).objectIDs
-        val favoriteArtworkList: List<Int> =
-            museumLocalDataSource.getAllFavoriteArtworkIds().first()
+        val remoteDataSourceList = flowOf(museumRemoteDataSource.searchArtworks(query).objectIDs)
 
+        val favoriteArtworkList =
+            museumLocalDataSource.getAllFavoriteArtworkIds()
 
-        val checkedItemList = remoteDataSourceList?.map { id ->
-
-            CheckedItem(
-                id,
-                favoriteArtworkList.contains(id)
-
-            )
-
+        val checkedItemListFlow = combine(
+            remoteDataSourceList,
+            favoriteArtworkList
+        ) { remoteIds: List<Int>, favoriteIds: List<Int> ->
+            remoteIds.map { id ->
+                CheckedItem(id, favoriteIds.contains(id))
+            }
         }
 
-        return checkedItemList
+        return checkedItemListFlow
+
 
         //First create an object other then Search Response and return it as a list. The object should have 2 fields;
         // 1 is to check if it is in favorite and other one is id of the search result.

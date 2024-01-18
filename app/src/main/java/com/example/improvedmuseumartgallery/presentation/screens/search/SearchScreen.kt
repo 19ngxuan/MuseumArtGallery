@@ -39,8 +39,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.improvedmuseumartgallery.presentation.screens.UiState
-import com.example.improvedmuseumartgallery.presentation.screens.loading.LoadingScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,13 +51,13 @@ fun SearchScreen(
 
     var text by rememberSaveable { mutableStateOf("") }
     var active by rememberSaveable { mutableStateOf(false) }
-    val searchUiState = searchViewModel.searchV2.collectAsState()
-
+    val idsFlow = searchViewModel.searchedIdsFlow
+    val idsList by idsFlow.collectAsState(initial = emptyList())
 
 
     val onSearch: (String) -> Unit = { query ->
         if (query.isNotEmpty()) {
-            searchViewModel.searchV2(query)
+            searchViewModel.inputQuery(query)
 
         }
     }
@@ -164,30 +162,18 @@ fun SearchScreen(
                 // Items History
             }
 
-            when (val uiState = searchUiState.value) {
-                is UiState.Loading -> {
-                    LoadingScreen()
-                }
-
-                is UiState.Success -> {
-                    LazyColumn {
-                        items(uiState.data) { artId ->
-                            ListItem(headlineContent = {
-                                Text(
-                                    text = "${artId.id}",
-                                    color = if (artId.isFavorite) Color.Blue else Color.Unspecified
-                                )
-                            },
-                                Modifier.clickable {
-                                    navigateToDetail(artId.id)
-                                }
-                            )
+            LazyColumn {
+                items(idsList) { artId ->
+                    ListItem(headlineContent = {
+                        Text(
+                            text = "${artId.id}",
+                            color = if (artId.isFavorite) Color.Blue else Color.Unspecified
+                        )
+                    },
+                        Modifier.clickable {
+                            navigateToDetail(artId.id)
                         }
-                    }
-                }
-
-                else -> {
-                    Text("Fehler beim Laden der Suchergebnisse", color = Color.Red)
+                    )
                 }
             }
 

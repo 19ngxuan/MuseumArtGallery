@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface MuseumRepository {
     suspend fun getArtwork(artworkId: Int): Artwork
-    suspend fun searchArtworks(query: String): List<CheckedItem>?
+    suspend fun searchArtworks(query: String): Flow<List<CheckedItem>>
     suspend fun insertFavoriteArt(favoriteArtwork: FavoriteArtwork)
     suspend fun deleteFavoriteArt(favoriteArtwork: FavoriteArtwork)
     fun getFavoriteArtworkById(objectID: Int): Flow<FavoriteArtwork?>

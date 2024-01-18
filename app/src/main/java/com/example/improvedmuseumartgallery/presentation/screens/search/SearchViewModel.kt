@@ -2,14 +2,13 @@ package com.example.improvedmuseumartgallery.presentation.screens.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.improvedmuseumartgallery.domain.model.CheckedItem
 import com.example.improvedmuseumartgallery.domain.useCase.SearchArtwork
-import com.example.improvedmuseumartgallery.presentation.screens.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,28 +19,37 @@ class SearchViewModel @Inject constructor(
     ViewModel() {
 
 
-    private val refreshSearch = MutableSharedFlow<String>()
+    private val queryFlow = MutableSharedFlow<String>()
 
-    val searchV2 = refreshSearch.transform { query ->
-        emit(UiState.Loading)
-        val result = searchArtworksV2(query)
-        emit(result)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), UiState.Success(emptyList()))
+//    val searchedIdFlow = queryFlow.transform { query ->
+//        emit(UiState.Loading)
+//        val result = getArtworkIds(query)
+//        emit(result)
+//    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), UiState.Success(emptyList()))
 
-    fun searchV2(query: String) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val searchedIdsFlow = queryFlow.flatMapLatest { query ->
+        searchArtworkUseCase(query).stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            emptyList()
+        )
+    }
+
+    fun inputQuery(query: String) {
         viewModelScope.launch {
-            refreshSearch.emit(query)
+            queryFlow.emit(query)
         }
     }
 
-    private suspend fun searchArtworksV2(query: String): UiState<List<CheckedItem>> {
-        return try {
-            val result = searchArtworkUseCase(query)
-            UiState.Success(result ?: listOf())
-        } catch (e: Exception) {
-            UiState.Error
-        }
-    }
+//    private suspend fun getArtworkIds(query: String): UiState<List<CheckedItem>> {
+//        return try {
+//            val result = searchArtworkUseCase(query)
+//            UiState.Success(result ?: listOf())
+//        } catch (e: Exception) {
+//            UiState.Error
+//        }
+//    }
 
 
 }
