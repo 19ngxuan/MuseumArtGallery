@@ -42,7 +42,7 @@ fun DownloadDescription(
                 )
             }
 
-            //TODO Wrong Padding
+
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -73,5 +73,5 @@ fun DownloadDescription(
 )
 @Composable
 fun DownPreview() {
-    DownloadDescription(false, { false })
+    DownloadDescription(false) {}
 }
