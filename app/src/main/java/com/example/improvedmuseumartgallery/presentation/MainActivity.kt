@@ -9,16 +9,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
+import com.example.compose.Material3AppTheme
 import com.example.improvedmuseumartgallery.presentation.navigation.AppNavigation
-import com.example.improvedmuseumartgallery.presentation.theme.ImprovedMuseumArtGalleryTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window,false) //sets Screen behind System Bars
         setContent {
-            ImprovedMuseumArtGalleryTheme {
+            Material3AppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -35,7 +37,7 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    ImprovedMuseumArtGalleryTheme {
+    Material3AppTheme {
 
     }
 }

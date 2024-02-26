@@ -14,9 +14,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ViewCarousel
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +38,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.improvedmuseumartgallery.domain.model.CheckedItem
+import com.example.improvedmuseumartgallery.presentation.screens.UiState
+import com.example.improvedmuseumartgallery.presentation.screens.loading.AnimatedLoadingBuffer
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,13 +48,14 @@ import androidx.compose.ui.unit.sp
 fun SearchScreen(
     searchViewModel: SearchViewModel,
     navigateToDetail: (Int) -> Unit,
-    navigateToFavorites: () -> Unit
+    navigateToFavorites: () -> Unit,
+    navigateToDownload: () -> Unit
 ) {
 
     var text by rememberSaveable { mutableStateOf("") }
     var active by rememberSaveable { mutableStateOf(false) }
-    val idsFlow = searchViewModel.searchedIdsFlow
-    val idsList by idsFlow.collectAsState(initial = emptyList())
+    val statesOfIdListsFlow = searchViewModel.searchedIdsFlow
+    val stateOfIdLists by statesOfIdListsFlow.collectAsState(initial = UiState.Success(emptyList()))
 
 
     val onSearch: (String) -> Unit = { query ->
@@ -64,25 +67,6 @@ fun SearchScreen(
 
 
     Scaffold(
-
-        topBar = {
-            TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-
-                        ) {
-                        Icon(
-                            imageVector = Icons.Default.ViewCarousel,
-                            contentDescription = "Menu",
-                            modifier = Modifier.size(48.dp)
-                        )
-                    }
-                },
-
-
-                )
-        },
 
         bottomBar = {
             BottomAppBar {
@@ -101,6 +85,12 @@ fun SearchScreen(
                             contentDescription = "Localized description"
                         )
                     }
+                    IconButton(onClick = { navigateToDownload() }) {
+                        Icon(
+                            Icons.Filled.Download,
+                            contentDescription = "Localized description"
+                        )
+                    }
                 }
             }
         }
@@ -111,19 +101,20 @@ fun SearchScreen(
             Box(
                 modifier = Modifier
                     .padding(8.dp)
+
             ) {
 
                 Text(
                     text = "What are you looking for?",
                     style = TextStyle(
-                        fontSize = 50.sp,
+                        fontSize = 20.sp,
                         fontWeight = Bold,
                         fontFamily = MaterialTheme.typography.headlineMedium.fontFamily
                     )
 
                 )
             }
-            Spacer(modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.size(8.dp))
             SearchBar(
                 modifier = Modifier.fillMaxWidth(),
                 query = text,
@@ -162,18 +153,32 @@ fun SearchScreen(
                 // Items History
             }
 
-            LazyColumn {
-                items(idsList) { artId ->
-                    ListItem(headlineContent = {
-                        Text(
-                            text = "${artId.id}",
-                            color = if (artId.isFavorite) Color.Blue else Color.Unspecified
-                        )
-                    },
-                        Modifier.clickable {
-                            navigateToDetail(artId.id)
+            when (stateOfIdLists) {
+                is UiState.Loading -> {
+                    AnimatedLoadingBuffer()
+                }
+
+                is UiState.Success -> {
+
+                    LazyColumn {
+                        items((stateOfIdLists as UiState.Success<List<CheckedItem>>).data) { artId ->
+                            ListItem(headlineContent = {
+                                Text(
+                                    text = "${artId.id}",
+                                    color = if (artId.isFavorite) Color.Blue else Color.Unspecified
+                                )
+                            },
+                                Modifier.clickable {
+                                    navigateToDetail(artId.id)
+                                }
+                            )
                         }
-                    )
+                    }
+
+                }
+
+                else -> {
+                    Text("Error in Loading Data")
                 }
             }
 

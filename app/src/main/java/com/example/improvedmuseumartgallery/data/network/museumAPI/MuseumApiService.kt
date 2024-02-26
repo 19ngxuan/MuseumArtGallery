@@ -1,4 +1,4 @@
-package com.example.improvedmuseumartgallery.data.network
+package com.example.improvedmuseumartgallery.data.network.museumAPI
 
 import com.example.improvedmuseumartgallery.domain.model.Artwork
 import com.example.improvedmuseumartgallery.domain.model.SearchResponse

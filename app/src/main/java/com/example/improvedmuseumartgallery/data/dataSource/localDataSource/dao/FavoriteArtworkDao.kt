@@ -21,4 +21,5 @@ interface FavoriteArtworkDao {
 
     @Query("SELECT objectID FROM favoriteArtworks")
     fun getAllFavoriteArtworkIds(): Flow<List<Int>>
+
 }

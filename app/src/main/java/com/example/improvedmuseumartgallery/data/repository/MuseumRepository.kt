@@ -3,12 +3,12 @@ package com.example.improvedmuseumartgallery.data.repository
 import com.example.improvedmuseumartgallery.data.dataSource.localDataSource.MuseumLocalDataSource
 import com.example.improvedmuseumartgallery.data.dataSource.localDataSource.entity.FavoriteArtwork
 import com.example.improvedmuseumartgallery.data.dataSource.remoteDataSource.MuseumRemoteDataSource
-import com.example.improvedmuseumartgallery.domain.model.Artwork
+import com.example.improvedmuseumartgallery.domain.model.ArtworkWithFavorite
 import com.example.improvedmuseumartgallery.domain.model.CheckedItem
 import com.example.improvedmuseumartgallery.domain.repository.MuseumRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import java.io.File
 import javax.inject.Inject
 
 
@@ -19,43 +19,45 @@ class MuseumRepositoryImp @Inject constructor(
 
     override suspend fun searchArtworks(query: String): Flow<List<CheckedItem>> {
 
-        val remoteDataSourceList = flowOf(museumRemoteDataSource.searchArtworks(query).objectIDs)
 
-        val favoriteArtworkList =
-            museumLocalDataSource.getAllFavoriteArtworkIds()
+        val favoriteArtworkListFlow = museumLocalDataSource.getAllFavoriteArtworkIds()
+        val remoteDataSourceList = museumRemoteDataSource.searchArtworks(query).objectIDs
 
-        val checkedItemListFlow = combine(
-            remoteDataSourceList,
-            favoriteArtworkList
-        ) { remoteIds: List<Int>, favoriteIds: List<Int> ->
-            remoteIds.map { id ->
-                CheckedItem(id, favoriteIds.contains(id))
+        val checkedItemListFlow = favoriteArtworkListFlow.map { favoriteArtworkIds ->
+
+            remoteDataSourceList.map { id ->
+                CheckedItem(id, favoriteArtworkIds.contains(id))
+
+
             }
         }
 
         return checkedItemListFlow
 
-
-        //First create an object other then Search Response and return it as a list. The object should have 2 fields;
-        // 1 is to check if it is in favorite and other one is id of the search result.
-        //SampleObject(isFavorite,id)
-
-
-        // This function should return list of SampleObject = List<SampleObject>
-
-
-        // Get all the favorite ids from the database here.
-
-
-        // Check if the search results in the favorite id list or not. This control will be written to isFavorite field for each item of search result.
-
-
-//        return museumRemoteDataSource.searchArtworks(query)
     }
 
-    override suspend fun getArtwork(artworkId: Int): Artwork {
+    override suspend fun getArtwork(artworkId: Int): Flow<ArtworkWithFavorite> {
 
-        return museumRemoteDataSource.getArtwork(artworkId)
+
+        val favoriteArtworkFlow = museumLocalDataSource.getFavoriteArtworkById(artworkId)
+
+        val artwork = museumRemoteDataSource.getArtwork(artworkId)
+
+        val artworkWithFavorite = favoriteArtworkFlow.map { favoriteArtwork ->
+            ArtworkWithFavorite(
+                artwork.objectID,
+                artwork.title,
+                artwork.artistDisplayName,
+                artwork.primaryImage,
+                artwork.additionalImages,
+                artwork.department, favoriteArtwork?.objectID == artworkId
+            )
+        }
+
+
+        return artworkWithFavorite
+
+
     }
 
     override suspend fun insertFavoriteArt(favoriteArtwork: FavoriteArtwork) {
@@ -73,5 +75,13 @@ class MuseumRepositoryImp @Inject constructor(
     override fun getAllFavoriteArtworkIds(): Flow<List<Int>> {
         return museumLocalDataSource.getAllFavoriteArtworkIds()
     }
+
+    override suspend fun downloadFile(
+        url: String,
+        file: File
+        ):Result<Unit> {
+        return museumRemoteDataSource.downloadFile(url, file)
+    }
+
 
 }

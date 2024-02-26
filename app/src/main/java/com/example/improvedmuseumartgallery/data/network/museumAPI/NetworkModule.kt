@@ -1,4 +1,4 @@
-package com.example.improvedmuseumartgallery.data.network
+package com.example.improvedmuseumartgallery.data.network.museumAPI
 
 import dagger.Module
 import dagger.Provides

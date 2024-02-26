@@ -10,6 +10,7 @@ data class FavoriteArtwork(
     val title: String,
     val artistDisplayName: String,
     val primaryImage: String,
-    val department: String
+    val department: String,
+    var isBookmarked: Boolean = true
 )
 

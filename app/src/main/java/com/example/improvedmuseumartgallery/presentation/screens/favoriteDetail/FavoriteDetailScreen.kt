@@ -8,12 +8,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.ViewCarousel
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +38,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.improvedmuseumartgallery.R
 import com.example.improvedmuseumartgallery.data.dataSource.localDataSource.entity.FavoriteArtwork
+import com.example.improvedmuseumartgallery.presentation.screens.common.BackButton
 import kotlinx.coroutines.flow.Flow
 
 
@@ -46,7 +48,8 @@ import kotlinx.coroutines.flow.Flow
 fun FavoriteDetailScreen(
     favoriteDetailViewModel: FavoriteDetailViewModel,
     navigateToFavorites: () -> Unit,
-    navigateToSearch: () -> Unit
+    navigateToSearch: () -> Unit,
+    navigateToDownload: () -> Unit
 ) {
     val artworkFlow: Flow<FavoriteArtwork?> = favoriteDetailViewModel.favoriteArtwork
     val artwork: FavoriteArtwork? by artworkFlow.collectAsState(initial = null)
@@ -56,20 +59,18 @@ fun FavoriteDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
+                modifier = Modifier.height(90.dp),
+                title = {},
+                navigationIcon = {
                     Box(
                         modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterStart
 
-                        ) {
-                        Icon(
-                            imageVector = Icons.Default.ViewCarousel,
-                            contentDescription = "Menu",
-                            modifier = Modifier.size(48.dp)
-                        )
+                    ) {
+                        BackButton(onclick = {navigateToSearch()})
                     }
-                },
-
-                )
+                }
+            )
         },
 
         bottomBar = {
@@ -86,6 +87,12 @@ fun FavoriteDetailScreen(
                     IconButton(onClick = { navigateToFavorites() }) {
                         Icon(
                             Icons.Filled.BookmarkBorder,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                    IconButton(onClick = { navigateToDownload() }) {
+                        Icon(
+                            Icons.Filled.Download,
                             contentDescription = "Localized description"
                         )
                     }
